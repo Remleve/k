@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体态修复 · 专属计划</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #F5EDE7;
+  --bg2:      #EDE0D8;
+  --marsala:  #8B3A52;
+  --mars-l:   #B56078;
+  --mars-p:   #F2D9DF;
+  --clay:     #C4836A;
+  --dust:     #D4A090;
+  --sage:     #8FAF88;
+  --cream:    #FBF5F1;
+  --text:     #2A1515;
+  --text-m:   #6B3F3F;
+  --text-s:   #AA8585;
+  --card:     rgba(251,245,241,0.72);
+  --border:   rgba(255,255,255,0.85);
+  --shadow:   rgba(139,58,82,0.10);
+  --shadow2:  rgba(139,58,82,0.18);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  min-height: 100vh;
+  font-family: 'DM Sans', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  color: var(--text);
+  padding-bottom: 60px;
+  overflow-x: hidden;
+}
+
+/* ── Ambient blobs ── */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.b1 { width:320px;height:320px;background:rgba(139,58,82,0.09);top:-100px;right:-80px; animation-duration:20s; }
+.b2 { width:260px;height:260px;background:rgba(196,131,106,0.08);bottom:80px;left:-90px; animation-duration:15s; }
+.b3 { width:180px;height:180px;background:rgba(212,160,144,0.07);top:40%;right:10%; animation-duration:22s; }
+
+@keyframes drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(20px,30px) scale(1.08); }
+}
+
+.wrap { position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 22px; }
+
+/* ── Header ── */
+.header {
+  padding: 52px 22px 20px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--marsala);
+  letter-spacing: 0.12em;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+
+.header-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+
+.header-title span { color: var(--marsala); }
+
+.header-date {
+  font-size: 12px;
+  color: var(--text-s);
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+/* ── Stats ── */
+.stats-row {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0 20px;
+}
+
+.stat-card {
+  flex: 1;
+  background: var(--card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px 12px 14px;
+  text-align: center;
+  box-shadow: 0 4px 24px var(--shadow);
+}
+
+.stat-v {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--marsala);
+  line-height: 1;
+}
+
+.stat-l {
+  font-size: 10.5px;
+  color: var(--text-s);
+  margin-top: 5px;
+  letter-spacing: 0.06em;
+}
+
+/* ── Progress ── */
+.prog-wrap { margin-bottom: 22px; }
+
+.prog-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 9px;
+}
+
+.prog-label { font-size: 11.5px; color: var(--text-m); letter-spacing: 0.06em; }
+.prog-pct { font-size: 13px; font-weight: 600; color: var(--marsala); }
+
+.prog-bg {
+  height: 5px;
+  background: rgba(139,58,82,0.10);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--marsala), var(--clay));
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+/* ── Period toggle ── */
+.period-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.period-label { font-size: 12px; color: var(--text-s); }
+
+.sw { position:relative;width:42px;height:24px;cursor:pointer;flex-shrink:0; }
+.sw input { display:none; }
+
+.sw-track {
+  position:absolute;inset:0;
+  background: rgba(139,58,82,0.13);
+  border-radius:99px;
+  transition: background 0.3s;
+}
+.sw input:checked + .sw-track { background: var(--marsala); }
+
+.sw-thumb {
+  position:absolute;
+  width:18px;height:18px;
+  background:white;
+  border-radius:50%;
+  top:3px;left:3px;
+  transition:left 0.28s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 1px 5px rgba(0,0,0,0.18);
+}
+.sw input:checked ~ .sw-thumb { left: 21px; }
+
+.period-pill {
+  font-size: 11px;
+  background: var(--mars-p);
+  color: var(--marsala);
+  padding: 3px 11px;
+  border-radius: 99px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.period-pill.on { opacity:1; transform:translateX(0); }
+
+/* ── Section heading ── */
+.section { margin-bottom: 4px; }
+
+.sec-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sec-title-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sec-title-en {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--marsala);
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.sec-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(139,58,82,0.2), transparent);
+}
+
+/* ── Exercise card ── */
+.ex {
+  background: var(--card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 20px 18px 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 22px var(--shadow);
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.35s ease, box-shadow 0.25s;
+  animation: fadeUp 0.45s ease both;
+}
+
+.ex::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 3.5px; height: 100%;
+  background: linear-gradient(180deg, var(--marsala), var(--clay));
+  border-radius: 22px 0 0 22px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ex.done { opacity: 0.58; }
+.ex.done::after { opacity: 1; background: linear-gradient(180deg, var(--sage), #6B9464); }
+.ex:hover { box-shadow: 0 6px 28px var(--shadow2); }
+.ex.hide { display: none; }
+
+.ex-top { display: flex; align-items: flex-start; gap: 13px; }
+
+.ex-icon {
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--mars-p), rgba(196,131,106,0.12));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+
+.ex-info { flex: 1; min-width: 0; }
+.ex-name { font-size: 15.5px; font-weight: 600; color: var(--text); line-height: 1.25; }
+.ex-name-en { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--text-s); margin-bottom: 7px; }
+.ex-tags { display:flex; gap:6px; flex-wrap:wrap; }
+
+.tag {
+  font-size: 10.5px;
+  padding: 2.5px 9px;
+  border-radius: 99px;
+  background: rgba(139,58,82,0.07);
+  color: var(--marsala);
+  font-weight: 500;
+}
+
+.chk {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1.8px solid rgba(139,58,82,0.22);
+  background: white;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(.4,0,.2,1);
+}
+.chk.on { background: var(--sage); border-color: var(--sage); }
+.chk svg { opacity:0; transition:opacity 0.2s; }
+.chk.on svg { opacity:1; }
+
+.ex-desc {
+  font-size: 13px;
+  color: var(--text-m);
+  line-height: 1.75;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(139,58,82,0.07);
+}
+.ex-desc strong { color: var(--marsala); font-weight: 600; }
+
+.timer-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+
+.timer-btn {
+  padding: 8px 18px;
+  background: var(--marsala);
+  color: white;
+  border: none;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.22s;
+}
+.timer-btn.running { background: var(--clay); }
+.timer-btn.done-btn { background: var(--sage); }
+
+.timer-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--marsala);
+  font-variant-numeric: tabular-nums;
+  min-width: 52px;
+}
+.timer-num.urgent { color: var(--clay); }
+
+.done-banner {
+  display: none;
+  background: linear-gradient(135deg, var(--marsala) 0%, var(--clay) 100%);
+  color: white;
+  border-radius: 24px;
+  padding: 30px 24px;
+  margin-bottom: 16px;
+  text-align: center;
+  animation: popIn 0.4s cubic-bezier(.4,0,.2,1);
+}
+.done-banner.show { display: block; }
+
+@keyframes popIn {
+  from { opacity:0; transform: scale(0.94) translateY(10px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+.reset-btn {
+  margin-top: 16px;
+  padding: 8px 22px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 99px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.divider { text-align: center; color: var(--marsala); opacity: 0.2; font-size: 18px; letter-spacing: 0.4em; margin: 6px 0 20px; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="b1 blob"></div>
+<div class="b2 blob"></div>
+<div class="b3 blob"></div>
+
+<div class="wrap">
+  <div class="header" style="padding-left:0;padding-right:0;">
+    <div class="eyebrow">posture · recovery · daily ritual</div>
+    <div class="header-title">体态<span>修复</span>计划</div>
+    <div class="header-date" id="dateDisplay"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-v" id="streakCount">0</div>
+      <div class="stat-l">连续天数 🔥</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-v" id="totalCount">0</div>
+      <div class="stat-l">累计完成</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-v" id="todayPct">0%</div>
+      <div class="stat-l">今日进度</div>
+    </div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-head">
+      <span class="prog-label">今日完成度</span>
+      <span class="prog-pct" id="progPct">0%</span>
+    </div>
+    <div class="prog-bg">
+      <div class="prog-fill" id="progBar"></div>
+    </div>
+  </div>
+
+  <div class="period-row">
+    <span class="period-label">经期轻柔模式</span>
+    <label class="sw">
+      <input type="checkbox" id="periodToggle" onchange="togglePeriod()">
+      <div class="sw-track"></div>
+      <div class="sw-thumb"></div>
+    </label>
+    <span class="period-pill" id="periodPill">已开启 🌙</span>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">
+      <span class="sec-title-text">拉伸放松</span>
+      <span class="sec-title-en">Stretch &amp; Release</span>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="ex" data-id="1">
+      <div class="ex-top">
+        <div class="ex-icon">🧘</div>
+        <div class="ex-info">
+          <div class="ex-name">颈侧拉伸</div>
+          <div class="ex-name-en">Neck Side Stretch</div>
+          <div class="ex-tags"><span class="tag">30秒 × 两侧</span></div>
+        </div>
+        <div class="chk" onclick="toggleCheck(1)"><svg width="12" height="9" viewBox="0 0 12 9"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="ex-desc">右手轻放头顶，头向右肩侧倾。保持30秒后换侧。</div>
+      <div class="timer-row">
+        <button class="timer-btn" onclick="startTimer(1,30)">▶ 开始计时</button>
+        <div class="timer-num" id="tn-1">0:30</div>
+      </div>
+    </div>
+
+    <div class="ex" data-id="2">
+      <div class="ex-top">
+        <div class="ex-icon">🚪</div>
+        <div class="ex-info">
+          <div class="ex-name">门框胸肌拉伸</div>
+          <div class="ex-name-en">Doorway Stretch</div>
+          <div class="ex-tags"><span class="tag">30秒 × 两侧</span></div>
+        </div>
+        <div class="chk" onclick="toggleCheck(2)"><svg width="12" height="9" viewBox="0 0 12 9"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="ex-desc">单臂贴住门框，身体向前迈步。改善驼背最有效的拉伸。</div>
+      <div class="timer-row">
+        <button class="timer-btn" onclick="startTimer(2,30)">▶ 开始计时</button>
+        <div class="timer-num" id="tn-2">0:30</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <div class="section">
+    <div class="sec-title">
+      <span class="sec-title-text">激活强化</span>
+      <span class="sec-title-en">Activate &amp; Strengthen</span>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="ex" data-id="4" data-ph="true">
+      <div class="ex-top">
+        <div class="ex-icon">💆</div>
+        <div class="ex-info">
+          <div class="ex-name">下巴回收</div>
+          <div class="ex-name-en">Chin Tuck</div>
+          <div class="ex-tags"><span class="tag">10次 × 3组</span></div>
+        </div>
+        <div class="chk" onclick="toggleCheck(4)"><svg width="12" height="9" viewBox="0 0 12 9"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="ex-desc">水平向后收下巴，保持2秒。核心修复颈部前倾。</div>
+      <div class="timer-row">
+        <button class="timer-btn" onclick="startTimer(4,30)">▶ 组间休息</button>
+        <div class="timer-num" id="tn-4">0:30</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="done-banner" id="doneBanner">
+    <div class="done-icon">🌸</div>
+    <div class="done-title">今天完成了！</div>
+    <div class="done-sub">身体会记住每一次的认真。</div>
+    <button class="reset-btn" onclick="resetToday()">重置今日记录</button>
+  </div>
+</div>
+
+<script>
+const TOTAL = 3; 
+const PH_IDS = [4];
+let completed = new Set();
+let timers = {};
+let periodMode = false;
+
+function init() {
+  const today = new Date().toDateString();
+  let s = load();
+  const d = new Date();
+  document.getElementById('dateDisplay').textContent = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+
+  if (s.date !== today) {
+    s.streak = (s.lastDate && Math.round((new Date(today)-new Date(s.lastDate))/86400000) === 1) ? (s.streak||0)+1 : 1;
+    s.lastDate = today; s.date = today; s.completed = []; s.countedToday = false;
+    save(s);
+  }
+
+  completed = new Set(s.completed || []);
+  document.getElementById('streakCount').textContent = s.streak || 0;
+  document.getElementById('totalCount').textContent = s.total || 0;
+  completed.forEach(id => applyCheckUI(id, true));
+  updateProgress();
+}
+
+function load() { return JSON.parse(localStorage.getItem('postureApp_clean') || '{}'); }
+function save(s) { localStorage.setItem('postureApp_clean', JSON.stringify(s)); }
+
+function toggleCheck(id) {
+  completed.has(id) ? completed.delete(id) : completed.add(id);
+  applyCheckUI(id, completed.has(id));
+  saveCompleted();
+  updateProgress();
+}
+
+function applyCheckUI(id, on) {
+  const card = document.querySelector(`.ex[data-id="${id}"]`);
+  const btn  = card?.querySelector('.chk');
+  if (on) { btn?.classList.add('on'); card?.classList.add('done'); }
+  else    { btn?.classList.remove('on'); card?.classList.remove('done'); }
+}
+
+function updateProgress() {
+  const vt = periodMode ? TOTAL - PH_IDS.length : TOTAL;
+  const vd = periodMode ? [...completed].filter(id => !PH_IDS.includes(id)).length : completed.size;
+  const pct = Math.round(vd/vt*100) || 0;
+  document.getElementById('progBar').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '%';
+  document.getElementById('todayPct').textContent = pct + '%';
+  document.getElementById('doneBanner').classList.toggle('show', pct === 100);
+}
+
+function saveCompleted() {
+  const s = load(); s.completed = [...completed];
+  const vt = periodMode ? TOTAL - PH_IDS.length : TOTAL;
+  const vd = periodMode ? [...completed].filter(id => !PH_IDS.includes(id)).length : completed.size;
+  if (vd === vt && !s.countedToday) { s.total = (s.total || 0) + 1; s.countedToday = true; }
+  save(s);
+}
+
+function togglePeriod() {
+  periodMode = document.getElementById('periodToggle').checked;
+  document.getElementById('periodPill').classList.toggle('on', periodMode);
+  PH_IDS.forEach(id => document.querySelector(`.ex[data-id="${id}"]`)?.classList.toggle('hide', periodMode));
+  updateProgress();
+}
+
+function startTimer(id, seconds) {
+  const btn = document.querySelector(`.ex[data-id="${id}"] .timer-btn`);
+  const num = document.getElementById(`tn-${id}`);
+  if (timers[id]) { clearInterval(timers[id]); delete timers[id]; btn.textContent = '▶ 开始'; return; }
+  let rem = seconds;
+  timers[id] = setInterval(() => {
+    rem--; num.textContent = `${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;
+    if (rem <= 0) { clearInterval(timers[id]); delete timers[id]; btn.textContent = '✓ 完成'; if(!completed.has(id)) toggleCheck(id); }
+  }, 1000);
+}
+
+function resetToday() {
+  completed.clear(); document.querySelectorAll('.ex').forEach(c => c.classList.remove('done'));
+  document.querySelectorAll('.chk').forEach(b => b.classList.remove('on'));
+  const s = load(); s.completed = []; s.countedToday = false; save(s); updateProgress();
+}
+
+init();
+</script>
+</body>
+</html>
